@@ -311,7 +311,7 @@ async function main () {
           })
           const relIssues = _.get(issuesRaw, 'repository.pullRequest.closingIssuesReferences.nodes')
           for (const relIssue of relIssues) {
-            core.info(`related projectItems: ${relIssue.projectItems}`)
+            core.info(`related projectItems: ${relIssue.projectItems.nodes.length}`)
             const relProject = _.get(relIssue, 'projectItems.nodes')[0].project
             changesFile.push(`  - :arrow_lower_right: *${relIssuePrefix} issue [#${relIssue.number}](${relIssue.url}) opened by [@${relIssue.author.login}](${relIssue.author.url}) part of project [${relProject.title}](${relProject.url})*`)
             changesVar.push(`  - :arrow_lower_right: *${relIssuePrefix} issue #${relIssue.number} opened by @${relIssue.author.login}  part of project [${relProject.title}](${relProject.url})*`)
