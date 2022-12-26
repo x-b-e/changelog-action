@@ -66,6 +66,7 @@ async function main () {
   const includeRefIssues = core.getBooleanInput('includeRefIssues')
   const useGitmojis = core.getBooleanInput('useGitmojis')
   const includeInvalidCommits = core.getBooleanInput('includeInvalidCommits')
+  const formatForSlack = core.getBooleanInput('formatForSlack')
   const gh = github.getOctokit(token)
   const owner = github.context.repo.owner
   const repo = github.context.repo.repo
@@ -208,11 +209,15 @@ async function main () {
 
   const changesFile = []
   const changesVar = []
+  const changesForSlack = []
   let idx = 0
 
   if (breakingChanges.length > 0) {
     changesFile.push(useGitmojis ? '### :boom: BREAKING CHANGES' : '### BREAKING CHANGES')
     changesVar.push(useGitmojis ? '### :boom: BREAKING CHANGES' : '### BREAKING CHANGES')
+    if (formatForSlack) {
+      changesForSlack.push(useGitmojis ? ':boom: *BREAKING CHANGES*' : '*BREAKING CHANGES*')
+    }
     for (const breakChange of breakingChanges) {
       const body = breakChange.text.split('\n').map(ln => `  ${ln}`).join('  \n')
       const subjectFile = buildSubject({
@@ -233,6 +238,9 @@ async function main () {
       })
       changesFile.push(`- due to [\`${breakChange.sha.substring(0, 7)}\`](${breakChange.url}) - ${subjectFile.output}:\n\n${body}\n`)
       changesVar.push(`- due to [\`${breakChange.sha.substring(0, 7)}\`](${breakChange.url}) - ${subjectVar.output}:\n\n${body}\n`)
+      if (formatForSlack) {
+        changesForSlack.push(`• due to <${breakChange.url}|\`${breakChange.sha.substring(0, 7)}\`> • ${subjectVar.output}:\n\n${body}\n`)
+      }
     }
     idx++
   }
@@ -248,9 +256,15 @@ async function main () {
     if (idx > 0) {
       changesFile.push('')
       changesVar.push('')
+      if (formatForSlack) {
+        changesForSlack.push('')
+      }
     }
     changesFile.push(useGitmojis ? `### ${type.icon} ${type.header}` : `### ${type.header}`)
     changesVar.push(useGitmojis ? `### ${type.icon} ${type.header}` : `### ${type.header}`)
+    if (formatForSlack) {
+      changesForSlack.push(useGitmojis ? `${type.icon} *${type.header}*` : `*${type.header}*`)
+    }
 
     const relIssuePrefix = type.relIssuePrefix || 'addresses'
 
@@ -274,6 +288,9 @@ async function main () {
       })
       changesFile.push(`- [\`${commit.sha.substring(0, 7)}\`](${commit.url}) - ${scope}${subjectFile.output}`)
       changesVar.push(`- [\`${commit.sha.substring(0, 7)}\`](${commit.url}) - ${scope}${subjectVar.output}`)
+      if (formatForSlack) {
+        changesForSlack.push(`• <${commit.url}|\`${commit.sha.substring(0, 7)}\`> • ${scope}${subjectVar.output}`)
+      }
 
       if (includeRefIssues && subjectVar.prs.length > 0) {
         for (const prId of subjectVar.prs) {
@@ -304,6 +321,9 @@ async function main () {
           for (const relIssue of relIssues) {
             changesFile.push(`  - :arrow_lower_right: *${relIssuePrefix} issue [#${relIssue.number}](${relIssue.url}) opened by [@${relIssue.author.login}](${relIssue.author.url})*`)
             changesVar.push(`  - :arrow_lower_right: *${relIssuePrefix} issue #${relIssue.number} opened by @${relIssue.author.login}*`)
+            if (formatForSlack) {
+              changesForSlack.push(`  • :arrow_lower_right: *${relIssuePrefix} issue <${relIssue.url}|#${relIssue.number}> opened by <${relIssue.author.url}|@${relIssue.author.login}>*`)
+            }
           }
         }
       }
@@ -314,11 +334,17 @@ async function main () {
   if (changesFile.length > 0) {
     changesFile.push('')
     changesVar.push('')
+    if (formatForSlack) {
+      changesForSlack.push('')
+    }
   } else {
     return core.warning('Nothing to add to changelog because of excluded types.')
   }
 
   core.setOutput('changes', changesVar.join('\n'))
+  if (formatForSlack) {
+    core.setOutput('changesForSlack', changesForSlack.join('\n'))
+  }
 
   if (!writeToFile) { return }
 
