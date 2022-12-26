@@ -28110,6 +28110,7 @@ function buildSubject ({ writeToFile, subject, author, authorUrl, owner, repo })
   const hasPR = rePrEnding.test(subject)
   const prs = []
   let output = subject
+  let outputForSlack = subject
   if (writeToFile) {
     if (hasPR) {
       const prMatch = subject.match(rePrEnding)
@@ -28131,13 +28132,20 @@ function buildSubject ({ writeToFile, subject, author, authorUrl, owner, repo })
         prs.push(prId)
         return `*(PR #${prId} by @${author})*`
       })
+      if (formatForSlack) {
+        outputForSlack = subject.replace(rePrEnding, (m, prId) => {
+          prs.push(prId)
+          return `(PR <https://github.com/${owner}/${repo}/pull/${prId}|#${prId}> by <${authorUrl}|@${author}>)`
+        })
+      }
     } else {
       output = `${subject} *(commit by @${author})*`
     }
   }
   return {
     output,
-    prs
+    outputForSlack,
+    prs,
   }
 }
 
@@ -28318,13 +28326,14 @@ async function main () {
         subject: breakChange.subject,
         author: breakChange.author,
         authorUrl: breakChange.authorUrl,
+        formatForSlack,
         owner,
         repo
       })
       changesFile.push(`- due to [\`${breakChange.sha.substring(0, 7)}\`](${breakChange.url}) - ${subjectFile.output}:\n\n${body}\n`)
       changesVar.push(`- due to [\`${breakChange.sha.substring(0, 7)}\`](${breakChange.url}) - ${subjectVar.output}:\n\n${body}\n`)
       if (formatForSlack) {
-        changesForSlack.push(`• due to <${breakChange.url}|\`${breakChange.sha.substring(0, 7)}\`> ${subjectVar.output}:\n\n${body}\n`)
+        changesForSlack.push(`• due to <${breakChange.url}|\`${breakChange.sha.substring(0, 7)}\`> ${subjectVar.outputForSlack}:\n\n${body}\n`)
       }
     }
     idx++
@@ -28374,7 +28383,7 @@ async function main () {
       changesFile.push(`- [\`${commit.sha.substring(0, 7)}\`](${commit.url}) - ${scope}${subjectFile.output}`)
       changesVar.push(`- [\`${commit.sha.substring(0, 7)}\`](${commit.url}) - ${scope}${subjectVar.output}`)
       if (formatForSlack) {
-        changesForSlack.push(`• <${commit.url}|\`${commit.sha.substring(0, 7)}\`> ${scope}${subjectVar.output}`)
+        changesForSlack.push(`• <${commit.url}|\`${commit.sha.substring(0, 7)}\`> ${scope}${subjectVar.outputForSlack}`)
       }
 
       if (includeRefIssues && subjectVar.prs.length > 0) {
