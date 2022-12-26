@@ -28140,6 +28140,9 @@ function buildSubject ({ writeToFile, subject, author, authorUrl, owner, repo, f
       }
     } else {
       output = `${subject} *(commit by @${author})*`
+      if (formatForSlack) {
+        outputForSlack = `${subject} (commit by <${authorUrl}|@${author}>)`
+      }
     }
   }
   return {
@@ -28377,6 +28380,7 @@ async function main () {
         subject: commit.subject,
         author: commit.author,
         authorUrl: commit.authorUrl,
+        formatForSlack,
         owner,
         repo
       })
