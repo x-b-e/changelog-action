@@ -28421,7 +28421,7 @@ async function main () {
             changesFile.push(`  - :arrow_lower_right: *${relIssuePrefix} issue [#${relIssue.number}](${relIssue.url}) opened by [@${relIssue.author.login}](${relIssue.author.url})*`)
             changesVar.push(`  - :arrow_lower_right: *${relIssuePrefix} issue #${relIssue.number} opened by @${relIssue.author.login}*`)
             if (formatForSlack) {
-              changesForSlack.push(`  • :arrow_lower_right: *${relIssuePrefix} issue <${relIssue.url}|#${relIssue.number}> opened by <${relIssue.author.url}|@${relIssue.author.login}>*`)
+              changesForSlack.push(`  • :arrow_lower_right: ${relIssuePrefix} issue <${relIssue.url}|#${relIssue.number}> opened by <${relIssue.author.url}|@${relIssue.author.login}>`)
             }
           }
         }
