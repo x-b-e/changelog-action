@@ -28106,7 +28106,7 @@ const types = [
 const rePrId = /#([0-9]+)/g
 const rePrEnding = /\(#([0-9]+)\)$/
 
-function buildSubject ({ writeToFile, subject, author, authorUrl, owner, repo }) {
+function buildSubject ({ writeToFile, subject, author, authorUrl, owner, repo, formatForSlack }) {
   const hasPR = rePrEnding.test(subject)
   const prs = []
   let output = subject
