@@ -39,9 +39,9 @@ inputs:
     required: false
     default: 'false'
 outputs:
-  changelog:
+  changes:
     description: Generated changelog
-  changelogForSlack:
+  changesForSlack:
     description: Generated changelog formatted for slack (only when formatForSlack is set to true)
 runs:
   using: 'node16'
