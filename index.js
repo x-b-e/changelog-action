@@ -239,7 +239,7 @@ async function main () {
       changesFile.push(`- due to [\`${breakChange.sha.substring(0, 7)}\`](${breakChange.url}) - ${subjectFile.output}:\n\n${body}\n`)
       changesVar.push(`- due to [\`${breakChange.sha.substring(0, 7)}\`](${breakChange.url}) - ${subjectVar.output}:\n\n${body}\n`)
       if (formatForSlack) {
-        changesForSlack.push(`• due to <${breakChange.url}|\`${breakChange.sha.substring(0, 7)}\`> • ${subjectVar.output}:\n\n${body}\n`)
+        changesForSlack.push(`• due to <${breakChange.url}|\`${breakChange.sha.substring(0, 7)}\`> ${subjectVar.output}:\n\n${body}\n`)
       }
     }
     idx++
@@ -289,7 +289,7 @@ async function main () {
       changesFile.push(`- [\`${commit.sha.substring(0, 7)}\`](${commit.url}) - ${scope}${subjectFile.output}`)
       changesVar.push(`- [\`${commit.sha.substring(0, 7)}\`](${commit.url}) - ${scope}${subjectVar.output}`)
       if (formatForSlack) {
-        changesForSlack.push(`• <${commit.url}|\`${commit.sha.substring(0, 7)}\`> • ${scope}${subjectVar.output}`)
+        changesForSlack.push(`• <${commit.url}|\`${commit.sha.substring(0, 7)}\`> ${scope}${subjectVar.output}`)
       }
 
       if (includeRefIssues && subjectVar.prs.length > 0) {
@@ -303,6 +303,7 @@ async function main () {
                   closingIssuesReferences(first: 50) {
                     nodes {
                       number
+                      url
                       author {
                         login
                         url
