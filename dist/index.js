@@ -28129,20 +28129,22 @@ function buildSubject ({ writeToFile, subject, author, authorUrl, owner, repo, f
     }
   } else {
     if (hasPR) {
-      output = subject.replace(rePrEnding, (m, prId) => {
-        prs.push(prId)
-        return `*(PR #${prId} by @${author})*`
-      })
       if (formatForSlack) {
         outputForSlack = subject.replace(rePrEnding, (m, prId) => {
           prs.push(prId)
           return `(PR <https://github.com/${owner}/${repo}/pull/${prId}|#${prId}> by <${authorUrl}|@${author}>)`
         })
+      } else {
+        output = subject.replace(rePrEnding, (m, prId) => {
+          prs.push(prId)
+          return `*(PR #${prId} by @${author})*`
+        })
       }
     } else {
-      output = `${subject} *(commit by @${author})*`
       if (formatForSlack) {
         outputForSlack = `${subject} (commit by <${authorUrl}|@${author}>)`
+      } else {
+        output = `${subject} *(commit by @${author})*`
       }
     }
   }
