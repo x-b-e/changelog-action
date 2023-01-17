@@ -4,6 +4,7 @@ const _ = require('lodash')
 const cc = require('@conventional-commits/parser')
 const fs = require('fs').promises
 const { setTimeout } = require('timers/promises')
+const pluralize = require('pluralize')
 
 const types = [
   { types: ['feat', 'feature'], header: 'New Features', icon: ':sparkles:' },
@@ -340,12 +341,23 @@ async function main () {
             prId: parseInt(prId)
           })
           const relIssues = _.get(issuesRaw, 'repository.pullRequest.closingIssuesReferences.nodes')
+          if (formatForSlack) {
+            // Group the issues by author
+            const relIssuesByAuthor = _.groupBy(relIssues, 'author.login')
+            for (const author in relIssuesByAuthor) {
+              const relIssues = relIssuesByAuthor[author]
+              relIssues.sort((a, b) => a.number - b.number)
+              const relIssueStrs = relIssues.map(relIssue => {
+                `<${relIssue.url}|#${relIssue.number}>`
+              });
+              const authorUrl = relIssues[0].author.url
+              changesForSlack.push(`  • ${relIssuePrefix} ${pluralize('issue', relIssues.length)} ${relIssueStrs.join(', ')} opened by <${authorUrl}|@${author}>`)
+            }
+          }
           for (const relIssue of relIssues) {
             changesFile.push(`  - :arrow_lower_right: *${relIssuePrefix} issue [#${relIssue.number}](${relIssue.url}) opened by [@${relIssue.author.login}](${relIssue.author.url})*`)
             changesVar.push(`  - :arrow_lower_right: *${relIssuePrefix} issue #${relIssue.number} opened by @${relIssue.author.login}*`)
-            if (formatForSlack) {
-              changesForSlack.push(`  • :arrow_lower_right: ${relIssuePrefix} issue <${relIssue.url}|#${relIssue.number}> opened by <${relIssue.author.url}|@${relIssue.author.login}>`)
-            }
+            
           }
         }
       }
