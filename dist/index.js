@@ -28936,9 +28936,7 @@ async function main () {
               relIssues.sort((a, b) => a.number - b.number)
               const relIssueStrs = relIssues.map(relIssue => `<${relIssue.url}|#${relIssue.number}>`);
               const authorUrl = relIssues[0].author.url
-              let changelogItem = `  • ${relIssuePrefix} ${pluralize('issue', relIssues.length)} ${relIssueStrs.join(', ')} opened by <${authorUrl}|@${author}>`
-              console.log(`changelogItem:${changelogItem}`);
-              changesForSlack.push(changelogItem)
+              changesForSlack.push(`  • ${relIssuePrefix} ${pluralize('issue', relIssues.length)} ${relIssueStrs.join(', ')} opened by <${authorUrl}|@${author}>`)
             }
           }
           for (const relIssue of relIssues) {
