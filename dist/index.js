@@ -28938,13 +28938,14 @@ async function main () {
                 `<${relIssue.url}|#${relIssue.number}>`
               });
               const authorUrl = relIssues[0].author.url
-              changesForSlack.push(`  • ${relIssuePrefix} ${pluralize('issue', relIssues.length)} ${relIssueStrs.join(', ')} opened by <${authorUrl}|@${author}>`)
+              let changelogItem = `  • ${relIssuePrefix} ${pluralize('issue', relIssues.length)} ${relIssueStrs.join(', ')} opened by <${authorUrl}|@${author}>`
+              console.log(`changelogItem:${changelogItem}`);
+              changesForSlack.push(changelogItem)
             }
           }
           for (const relIssue of relIssues) {
             changesFile.push(`  - :arrow_lower_right: *${relIssuePrefix} issue [#${relIssue.number}](${relIssue.url}) opened by [@${relIssue.author.login}](${relIssue.author.url})*`)
             changesVar.push(`  - :arrow_lower_right: *${relIssuePrefix} issue #${relIssue.number} opened by @${relIssue.author.login}*`)
-            
           }
         }
       }
