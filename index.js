@@ -310,8 +310,6 @@ async function main () {
       changesFile.push(`- [\`${commit.sha.substring(0, 7)}\`](${commit.url}) - ${scope}${subjectFile.output}`)
       changesVar.push(`- [\`${commit.sha.substring(0, 7)}\`](${commit.url}) - ${scope}${subjectVar.output}`)
       if (formatForSlack) {
-        console.log('outputForSlack: ', subjectVar.outputForSlack);
-        // changesForSlack.push(`• <${commit.url}|\`${commit.sha.substring(0, 7)}\`> ${scope}${subjectVar.outputForSlack}`)
         changesForSlack.push(`• ${subjectVar.outputForSlack}`)
       }
 
