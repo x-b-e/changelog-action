@@ -28130,6 +28130,7 @@ function buildSubject ({ writeToFile, subject, author, authorUrl, owner, repo, f
   } else {
     if (hasPR) {
       if (formatForSlack) {
+        console.log('subject: ', subject);
         outputForSlack = subject.replace(rePrEnding, (m, prId) => {
           prs.push(prId)
           return `(PR <https://github.com/${owner}/${repo}/pull/${prId}|#${prId}> by <${authorUrl}|@${author}>)`
