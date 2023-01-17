@@ -28107,7 +28107,7 @@ const types = [
 const rePrId = /#([0-9]+)/g
 const rePrEnding = /\(#([0-9]+)\)$/
 
-function buildSubject ({ writeToFile, subject, author, authorUrl, owner, repo, formatForSlack }) {
+function buildSubject ({ writeToFile, subject, author, authorUrl, commitScope, commitUrl, commitShaSubstr, owner, repo, formatForSlack }) {
   const hasPR = rePrEnding.test(subject)
   const prs = []
   let output = subject
@@ -28132,8 +28132,9 @@ function buildSubject ({ writeToFile, subject, author, authorUrl, owner, repo, f
       if (formatForSlack) {
         outputForSlack = subject.replace(rePrEnding, (m, prId) => {
           prs.push(prId)
-          return `(PR <https://github.com/${owner}/${repo}/pull/${prId}|#${prId}> by <${authorUrl}|@${author}>)`
-        })
+          return `(<${commitUrl}|${commitShaSubstr}>, <${authorUrl}|@${author}>)`;
+        });
+        outputForSlack = `${commitScope ? `(${commitScope}) ` : ''}${outputForSlack}`;
       } else {
         output = subject.replace(rePrEnding, (m, prId) => {
           prs.push(prId)
@@ -28384,6 +28385,9 @@ async function main () {
         subject: commit.subject,
         author: commit.author,
         authorUrl: commit.authorUrl,
+        commitScope: commit.scope,
+        commitUrl: commit.url,
+        commitShaSubstr: commit.sha.substring(0, 7),
         formatForSlack,
         owner,
         repo
@@ -28391,7 +28395,7 @@ async function main () {
       changesFile.push(`- [\`${commit.sha.substring(0, 7)}\`](${commit.url}) - ${scope}${subjectFile.output}`)
       changesVar.push(`- [\`${commit.sha.substring(0, 7)}\`](${commit.url}) - ${scope}${subjectVar.output}`)
       if (formatForSlack) {
-        changesForSlack.push(`• <${commit.url}|\`${commit.sha.substring(0, 7)}\`> ${scope}${subjectVar.outputForSlack}`)
+        changesForSlack.push(`• ${subjectVar.outputForSlack}`)
       }
 
       if (includeRefIssues && subjectVar.prs.length > 0) {
