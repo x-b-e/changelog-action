@@ -28903,7 +28903,7 @@ async function main () {
 
       if (includeRefIssues && subjectVar.prs.length > 0) {
         for (const prId of subjectVar.prs) {
-          core.info(`Querying related issues for PR ${prId}...`)
+          core.info(`Querying related issues for Pull Request ${prId}...`)
           await setTimeout(500) // Make sure we don't go over GitHub API rate limits
           const issuesRaw = await gh.graphql(`
             query relIssues ($owner: String!, $repo: String!, $prId: Int!) {
@@ -28916,6 +28916,15 @@ async function main () {
                       author {
                         login
                         url
+                      }
+                      projectItems(first: 1) {
+                        nodes {
+                          project {
+                            number,
+                            title,
+                            url
+                          }
+                        }
                       }
                     }
                   }
@@ -28940,8 +28949,10 @@ async function main () {
             }
           }
           for (const relIssue of relIssues) {
-            changesFile.push(`  - :arrow_lower_right: *${relIssuePrefix} issue [#${relIssue.number}](${relIssue.url}) opened by [@${relIssue.author.login}](${relIssue.author.url})*`)
-            changesVar.push(`  - :arrow_lower_right: *${relIssuePrefix} issue #${relIssue.number} opened by @${relIssue.author.login}*`)
+            core.info(`issuesRaw: ${JSON.stringify(issuesRaw)}`)
+            const relProject = _.get(relIssue, 'projectItems.nodes')[0].project
+            changesFile.push(`  - :arrow_lower_right: *${relIssuePrefix} issue [#${relIssue.number}](${relIssue.url}) opened by [@${relIssue.author.login}](${relIssue.author.url}) part of project [${relProject.title}](${relProject.url})*`)
+            changesVar.push(`  - :arrow_lower_right: *${relIssuePrefix} issue #${relIssue.number} opened by @${relIssue.author.login}  part of project [${relProject.title}](${relProject.url})*`)
           }
         }
       }
