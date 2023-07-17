@@ -28713,6 +28713,8 @@ const { setTimeout } = __nccwpck_require__(8670)
 const pluralize = __nccwpck_require__(3880)
 const humanizeString = __nccwpck_require__(4861)
 
+console.log('humanizeString', humanizeString);
+
 const types = [
   { types: ['feat', 'feature'], header: 'New Features', icon: ':sparkles:' },
   { types: ['fix', 'bugfix'], header: 'Bug Fixes', icon: ':bug:', relIssuePrefix: 'fixes' },
