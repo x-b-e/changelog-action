@@ -5,6 +5,7 @@ const cc = require('@conventional-commits/parser')
 const fs = require('fs').promises
 const { setTimeout } = require('timers/promises')
 const pluralize = require('pluralize')
+const humanizeString = require('humanize-string').default
 
 const types = [
   { types: ['feat', 'feature'], header: 'New Features', icon: ':sparkles:' },
@@ -22,6 +23,12 @@ const types = [
 
 const rePrId = /#([0-9]+)/g
 const rePrEnding = /\(#([0-9]+)\)$/
+
+function formatScopeForSlack(scope) {
+  if (!scope) return;
+  let formattedScope = humanizeString(scope).split(' ').map(w => `${w[0].toUpperCase()}${w.substring(1)}`).join(' ');
+  return `*${formattedScope}*`;
+}
 
 function buildSubject ({ writeToFile, subject, author, authorUrl, commitScope, commitUrl, commitShaSubstr, owner, repo, formatForSlack }) {
   const hasPR = rePrEnding.test(subject)
@@ -50,7 +57,7 @@ function buildSubject ({ writeToFile, subject, author, authorUrl, commitScope, c
           prs.push(prId)
           return `(<${commitUrl}|${commitShaSubstr}>, <${authorUrl}|@${author}>)`;
         });
-        outputForSlack = `${commitScope ? `(${commitScope}) ` : ''}${outputForSlack}`;
+        outputForSlack = `${commitScope ? `${formatScopeForSlack(commitScope)}: ` : ''}${outputForSlack}`;
       } else {
         output = subject.replace(rePrEnding, (m, prId) => {
           prs.push(prId)
