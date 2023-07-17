@@ -28995,7 +28995,7 @@ async function main () {
         subject: commit.subject,
         author: commit.author,
         authorUrl: commit.authorUrl,
-        commitScope: commit.scope ? humanizeString(commit.scope) : '',
+        commitScope: commit.scope ? humanizeString(commit.scope) : commit.scope,
         commitUrl: commit.url,
         commitShaSubstr: commit.sha.substring(0, 7),
         formatForSlack,
