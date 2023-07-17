@@ -5,6 +5,7 @@ const cc = require('@conventional-commits/parser')
 const fs = require('fs').promises
 const { setTimeout } = require('timers/promises')
 const pluralize = require('pluralize')
+const humanizeString = require('humanize-string ')
 
 const types = [
   { types: ['feat', 'feature'], header: 'New Features', icon: ':sparkles:' },
@@ -287,7 +288,7 @@ async function main () {
     const relIssuePrefix = type.relIssuePrefix || 'addresses'
 
     for (const commit of matchingCommits) {
-      const scope = commit.scope ? `**${commit.scope}**: ` : ''
+      const scope = commit.scope ? `**${humanizeString(commit.scope)}**: ` : ''
       const subjectFile = buildSubject({
         writeToFile: true,
         subject: commit.subject,
