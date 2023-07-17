@@ -24,6 +24,12 @@ const types = [
 const rePrId = /#([0-9]+)/g
 const rePrEnding = /\(#([0-9]+)\)$/
 
+function formatScopeForSlack(scope) {
+  if (!scope) return;
+  let formattedScope = humanizeString(scope).split(' ').map(w => `${w[0].toUpperCase()}${w.substring(1)}`).join(' ');
+  return `*${formattedScope}*`;
+}
+
 function buildSubject ({ writeToFile, subject, author, authorUrl, commitScope, commitUrl, commitShaSubstr, owner, repo, formatForSlack }) {
   const hasPR = rePrEnding.test(subject)
   const prs = []
@@ -51,7 +57,7 @@ function buildSubject ({ writeToFile, subject, author, authorUrl, commitScope, c
           prs.push(prId)
           return `(<${commitUrl}|${commitShaSubstr}>, <${authorUrl}|@${author}>)`;
         });
-        outputForSlack = `${commitScope ? `${humanizeString(commitScope)}: ` : ''}${outputForSlack}`;
+        outputForSlack = `${commitScope ? `${formatScopeForSlack(commitScope)}: ` : ''}${outputForSlack}`;
       } else {
         output = subject.replace(rePrEnding, (m, prId) => {
           prs.push(prId)
