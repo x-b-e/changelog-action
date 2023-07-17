@@ -51,7 +51,7 @@ function buildSubject ({ writeToFile, subject, author, authorUrl, commitScope, c
           prs.push(prId)
           return `(<${commitUrl}|${commitShaSubstr}>, <${authorUrl}|@${author}>)`;
         });
-        outputForSlack = `${commitScope ? `(${commitScope}) ` : ''}${outputForSlack}`;
+        outputForSlack = `${commitScope ? `${commitScope} ` : ''}${outputForSlack}`;
       } else {
         output = subject.replace(rePrEnding, (m, prId) => {
           prs.push(prId)
@@ -288,6 +288,7 @@ async function main () {
     const relIssuePrefix = type.relIssuePrefix || 'addresses'
 
     for (const commit of matchingCommits) {
+      console.log(commit.subject, commit.scope ? humanizeString(commit.scope) : 'none');
       const scope = commit.scope ? `**${humanizeString(commit.scope)}**: ` : ''
       const subjectFile = buildSubject({
         writeToFile: true,
