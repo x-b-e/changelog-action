@@ -28396,14 +28396,6 @@ module.exports = eval("require")("encoding");
 
 /***/ }),
 
-/***/ 3343:
-/***/ ((module) => {
-
-module.exports = eval("require")("humanize-string ");
-
-
-/***/ }),
-
 /***/ 9491:
 /***/ ((module) => {
 
@@ -28532,6 +28524,97 @@ module.exports = require("zlib");
 
 /***/ }),
 
+/***/ 4861:
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __nccwpck_require__) => {
+
+"use strict";
+// ESM COMPAT FLAG
+__nccwpck_require__.r(__webpack_exports__);
+
+// EXPORTS
+__nccwpck_require__.d(__webpack_exports__, {
+  "default": () => (/* binding */ humanizeString)
+});
+
+;// CONCATENATED MODULE: ./node_modules/decamelize/index.js
+const handlePreserveConsecutiveUppercase = (decamelized, separator) => {
+	// Lowercase all single uppercase characters. As we
+	// want to preserve uppercase sequences, we cannot
+	// simply lowercase the separated string at the end.
+	// `data_For_USACounties` → `data_for_USACounties`
+	decamelized = decamelized.replace(
+		/((?<![\p{Uppercase_Letter}\d])[\p{Uppercase_Letter}\d](?![\p{Uppercase_Letter}\d]))/gu,
+		$0 => $0.toLowerCase(),
+	);
+
+	// Remaining uppercase sequences will be separated from lowercase sequences.
+	// `data_For_USACounties` → `data_for_USA_counties`
+	return decamelized.replace(
+		/(\p{Uppercase_Letter}+)(\p{Uppercase_Letter}\p{Lowercase_Letter}+)/gu,
+		(_, $1, $2) => $1 + separator + $2.toLowerCase(),
+	);
+};
+
+function decamelize(
+	text,
+	{
+		separator = '_',
+		preserveConsecutiveUppercase = false,
+	} = {},
+) {
+	if (!(typeof text === 'string' && typeof separator === 'string')) {
+		throw new TypeError(
+			'The `text` and `separator` arguments should be of type `string`',
+		);
+	}
+
+	// Checking the second character is done later on. Therefore process shorter strings here.
+	if (text.length < 2) {
+		return preserveConsecutiveUppercase ? text : text.toLowerCase();
+	}
+
+	const replacement = `$1${separator}$2`;
+
+	// Split lowercase sequences followed by uppercase character.
+	// `dataForUSACounties` → `data_For_USACounties`
+	// `myURLstring → `my_URLstring`
+	const decamelized = text.replace(
+		/([\p{Lowercase_Letter}\d])(\p{Uppercase_Letter})/gu,
+		replacement,
+	);
+
+	if (preserveConsecutiveUppercase) {
+		return handlePreserveConsecutiveUppercase(decamelized, separator);
+	}
+
+	// Split multiple uppercase characters followed by one or more lowercase characters.
+	// `my_URLstring` → `my_ur_lstring`
+	return decamelized
+		.replace(
+			/(\p{Uppercase_Letter})(\p{Uppercase_Letter}\p{Lowercase_Letter}+)/gu,
+			replacement,
+		)
+		.toLowerCase();
+}
+
+;// CONCATENATED MODULE: ./node_modules/humanize-string/index.js
+
+
+function humanizeString(string) {
+	if (typeof string !== 'string') {
+		throw new TypeError('Expected a string');
+	}
+
+	string = decamelize(string);
+	string = string.toLowerCase().replace(/[_-]+/g, ' ').replace(/\s{2,}/g, ' ').trim();
+	string = string.charAt(0).toUpperCase() + string.slice(1);
+
+	return string;
+}
+
+
+/***/ }),
+
 /***/ 2020:
 /***/ ((module) => {
 
@@ -28576,6 +28659,34 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /******/ 	}
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__nccwpck_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__nccwpck_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/node module decorator */
 /******/ 	(() => {
 /******/ 		__nccwpck_require__.nmd = (module) => {
@@ -28600,7 +28711,7 @@ const cc = __nccwpck_require__(4241)
 const fs = (__nccwpck_require__(7147).promises)
 const { setTimeout } = __nccwpck_require__(8670)
 const pluralize = __nccwpck_require__(3880)
-const humanizeString = __nccwpck_require__(3343)
+const humanizeString = __nccwpck_require__(4861)
 
 const types = [
   { types: ['feat', 'feature'], header: 'New Features', icon: ':sparkles:' },
