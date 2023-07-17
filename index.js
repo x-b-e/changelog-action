@@ -5,7 +5,7 @@ const cc = require('@conventional-commits/parser')
 const fs = require('fs').promises
 const { setTimeout } = require('timers/promises')
 const pluralize = require('pluralize')
-const humanizeString = require('humanize-string')
+const humanizeString = require('humanize-string').default
 
 const types = [
   { types: ['feat', 'feature'], header: 'New Features', icon: ':sparkles:' },
