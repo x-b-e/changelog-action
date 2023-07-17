@@ -288,7 +288,6 @@ async function main () {
     const relIssuePrefix = type.relIssuePrefix || 'addresses'
 
     for (const commit of matchingCommits) {
-      console.log(commit.subject, commit.scope ? humanizeString(commit.scope) : 'none');
       const scope = commit.scope ? `**${humanizeString(commit.scope)}**: ` : ''
       const subjectFile = buildSubject({
         writeToFile: true,
@@ -303,7 +302,7 @@ async function main () {
         subject: commit.subject,
         author: commit.author,
         authorUrl: commit.authorUrl,
-        commitScope: commit.scope,
+        commitScope: humanizeString(commit.scope),
         commitUrl: commit.url,
         commitShaSubstr: commit.sha.substring(0, 7),
         formatForSlack,
